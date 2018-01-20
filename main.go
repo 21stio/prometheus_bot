@@ -344,7 +344,7 @@ func loadTemplate(tmplPath string) *template.Template {
 	if err != nil {
 		log.Fatalf("Problem reading parsing template file: %v", err)
 	} else {
-		log.Printf("Load template file:%s", tmplPath)
+		log.Println(fmt.Sprintf("Load template file:%s", tmplPath))
 	}
 
 	return tmpH
@@ -412,7 +412,7 @@ func main() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 
-	log.Printf("Authorised on account %s", bot.Self.UserName)
+	log.Println(fmt.Sprintf("Authorised on account %s", bot.Self.UserName))
 
 	go telegramBot(bot)
 
@@ -424,17 +424,17 @@ func main() {
 }
 
 func GET_Handling(c *gin.Context) {
-	log.Printf("Received GET")
+	log.Println(fmt.Sprintf("Received GET"))
 	chatid, err := strconv.ParseInt(c.Param("chatid"), 10, 64)
 	if err != nil {
-		log.Printf("Cat't parse chat id: %q", c.Param("chatid"))
+		log.Println(fmt.Sprintf("Cat't parse chat id: %q", c.Param("chatid")))
 		c.JSON(http.StatusServiceUnavailable, gin.H{
 			"err": fmt.Sprint(err),
 		})
 		return
 	}
 
-	log.Printf("Bot test: %d", chatid)
+	log.Println(fmt.Sprintf("Bot test: %d", chatid))
 	msgtext := fmt.Sprintf("Some HTTP triggered notification by prometheus bot... %d", chatid)
 	msg := tgbotapi.NewMessage(chatid, msgtext)
 	sendmsg, err := bot.Send(msg)
@@ -514,7 +514,7 @@ func AlertFormatTemplate(alerts Alerts) string {
 	writer := io.Writer(&bytesBuff)
 
 	if *debug {
-		log.Printf("Reloading Template\n")
+		log.Println(fmt.Sprintf("Reloading Template\n"))
 		// reload template bacause we in debug mode
 		tmpH = loadTemplate(cfg.TemplatePath)
 	}
@@ -536,10 +536,10 @@ func POST_Handling(c *gin.Context) {
 
 	chatid, err := strconv.ParseInt(c.Param("chatid"), 10, 64)
 
-	log.Printf("Bot alert post: %d", chatid)
+	log.Println(fmt.Sprintf("Bot alert post: %d", chatid))
 
 	if err != nil {
-		log.Printf("Cat't parse chat id: %q", c.Param("chatid"))
+		log.Println(fmt.Sprintf("Cat't parse chat id: %q", c.Param("chatid")))
 		c.JSON(http.StatusServiceUnavailable, gin.H{
 			"err": fmt.Sprint(err),
 		})
@@ -555,7 +555,7 @@ func POST_Handling(c *gin.Context) {
 	}
 
 	log.Println("+------------------  A L E R T  J S O N  -------------------+")
-	log.Printf("%s", s)
+	log.Println(fmt.Sprintf("%s", s))
 	log.Println("+-----------------------------------------------------------+\n\n")
 
 	// Decide how format Text
@@ -579,7 +579,7 @@ func POST_Handling(c *gin.Context) {
 		if err == nil {
 			c.String(http.StatusOK, "telegram msg sent.")
 		} else {
-			log.Printf("Error sending message: %s", err)
+			log.Println(fmt.Sprintf("Error sending message: %s", err))
 			c.JSON(http.StatusServiceUnavailable, gin.H{
 				"err":     fmt.Sprint(err),
 				"message": sendmsg,
